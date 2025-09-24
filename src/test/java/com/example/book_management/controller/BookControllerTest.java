@@ -1,0 +1,51 @@
+package com.example.book_management.controller;
+
+import com.example.book_management.entity.Book;
+import com.example.book_management.service.BookService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(BookController.class)
+class BookControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private BookService bookService; // mock the service so controller can be created
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"USER"})
+    void shouldAddBookWithValidData() throws Exception {
+        when(bookService.addBook(org.mockito.ArgumentMatchers.any()))
+                .thenReturn(new Book());
+
+        mockMvc.perform(post("/books/add")
+                        .param("title", "Spring Boot in Action")
+                        .param("author", "John Doe")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/books")); // success → redirect
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"USER"})
+    void shouldRejectBookWithEmptyTitle() throws Exception {
+        mockMvc.perform(post("/books/add")
+                        .param("title", "") // invalid title
+                        .param("author", "John Doe")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/books/add?error")); // error → redirect with flag
+    }
+}

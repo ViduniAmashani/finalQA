@@ -18,6 +18,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // CSRF disabled intentionally for API and Postman requests
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register").permitAll()      // login/register pages

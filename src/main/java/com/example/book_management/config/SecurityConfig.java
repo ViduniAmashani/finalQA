@@ -18,8 +18,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register").permitAll()
+                        .requestMatchers("/login", "/register").permitAll()      // login/register pages
+                        .requestMatchers("/books/list").permitAll()              // Thymeleaf UI
+                        .requestMatchers("/api/**").permitAll()                  // REST API
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

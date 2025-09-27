@@ -9,9 +9,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.*;
-//coment 11
 
- class LoginAndRegisterUITest {
+class LoginAndRegisterUITest {
 
     private WebDriver driver;
 
@@ -29,16 +28,20 @@ import static org.junit.jupiter.api.Assertions.*;
         }
     }
 
+    private void navigateTo(String path) {
+        driver.get("http://localhost:8080" + path);
+    }
+
     @Test
     void testRegisterPageLoads() {
-        driver.get("http://localhost:8080/register");
+        navigateTo("/register");
         String title = driver.getTitle();
         assertTrue(title.contains("Register"));
     }
 
     @Test
     void testLoginPageLoads() {
-        driver.get("http://localhost:8080/login");
+        navigateTo("/login");
         WebElement usernameField = driver.findElement(By.name("username"));
         assertNotNull(usernameField);
     }
